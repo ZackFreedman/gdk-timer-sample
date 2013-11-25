@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.glass.sample.timer;
+package com.voidstar.glass.voiceenabledtimer;
 
 import com.google.android.glass.widget.CardScrollAdapter;
 

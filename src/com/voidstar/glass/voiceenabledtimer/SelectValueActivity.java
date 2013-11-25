@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.google.android.glass.sample.timer;
+package com.voidstar.glass.voiceenabledtimer;
 
+import android.app.Activity;
 import com.google.android.glass.touchpad.Gesture;
 import com.google.android.glass.touchpad.GestureDetector;
 import com.google.android.glass.widget.CardScrollView;
@@ -28,19 +29,21 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 
 /**
- * Activity to set the timer.
+ * Activity to select a timer component value.
  */
-public class SetTimerActivity extends Activity implements GestureDetector.BaseListener {
+public class SelectValueActivity extends Activity implements GestureDetector.BaseListener {
 
-    public static final String EXTRA_DURATION_MILLIS = "duration_millis";
+    public static final String EXTRA_COUNT = "count";
+    public static final String EXTRA_INITIAL_VALUE = "initial_value";
+    public static final String EXTRA_SELECTED_VALUE = "selected_value";
 
-    private static final int SELECT_VALUE = 100;
+    private static final int DEFAULT_COUNT = 60;
 
     private AudioManager mAudioManager;
 
     private GestureDetector mDetector;
     private CardScrollView mView;
-    private SetTimerScrollAdapter mAdapter;
+    private SelectValueScrollAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,8 +51,8 @@ public class SetTimerActivity extends Activity implements GestureDetector.BaseLi
 
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        mAdapter = new SetTimerScrollAdapter(this);
-        mAdapter.setDurationMillis(getIntent().getLongExtra(EXTRA_DURATION_MILLIS, 0));
+        mAdapter = new SelectValueScrollAdapter(
+                this, getIntent().getIntExtra(EXTRA_COUNT, DEFAULT_COUNT));
 
         mView = new CardScrollView(this) {
             @Override
@@ -70,6 +73,7 @@ public class SetTimerActivity extends Activity implements GestureDetector.BaseLi
     public void onResume() {
         super.onResume();
         mView.activate();
+        mView.setSelection(getIntent().getIntExtra(EXTRA_INITIAL_VALUE, 0));
     }
 
     @Override
@@ -86,40 +90,13 @@ public class SetTimerActivity extends Activity implements GestureDetector.BaseLi
     @Override
     public boolean onGesture(Gesture gesture) {
         if (gesture == Gesture.TAP) {
-            int position = mView.getSelectedItemPosition();
-            SetTimerScrollAdapter.TimeComponents component =
-                    (SetTimerScrollAdapter.TimeComponents) mAdapter.getItem(position);
-            Intent selectValueIntent = new Intent(this, SelectValueActivity.class);
-
-            selectValueIntent.putExtra(SelectValueActivity.EXTRA_COUNT, component.getMaxValue());
-            selectValueIntent.putExtra(
-                    SelectValueActivity.EXTRA_INITIAL_VALUE,
-                    (int) mAdapter.getTimeComponent(component));
-            startActivityForResult(selectValueIntent, SELECT_VALUE);
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra(EXTRA_SELECTED_VALUE, mView.getSelectedItemPosition());
+            setResult(RESULT_OK, resultIntent);
             mAudioManager.playSoundEffect(AudioManager.FX_KEY_CLICK);
+            finish();
             return true;
         }
         return false;
-    }
-
-    @Override
-    public void onBackPressed() {
-        Intent resultIntent = new Intent();
-        resultIntent.putExtra(EXTRA_DURATION_MILLIS, mAdapter.getDurationMillis());
-        setResult(RESULT_OK, resultIntent);
-        super.onBackPressed();
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == SELECT_VALUE) {
-            int position = mView.getSelectedItemPosition();
-            SetTimerScrollAdapter.TimeComponents component =
-                    (SetTimerScrollAdapter.TimeComponents) mAdapter.getItem(position);
-
-            mAdapter.setTimeComponent(
-                    component, data.getIntExtra(SelectValueActivity.EXTRA_SELECTED_VALUE, 0));
-            mView.updateViews(true);
-        }
     }
 }

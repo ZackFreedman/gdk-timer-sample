@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.google.android.glass.sample.timer;
+package com.voidstar.glass.voiceenabledtimer;
 
 import android.content.Context;
 import android.graphics.Canvas;
