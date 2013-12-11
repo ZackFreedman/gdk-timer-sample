@@ -42,7 +42,7 @@ To start the sample, say "OK Glass, set a timer for..." from the Glass clock scr
 
 ## More Information
 
-Voice-Enabled Timer was modified from Google's platform sample by Zack Freedman of Voidstar Lab. Visit [his site](http://zackfreedman.com "the greatest site on the Web since Zombo.com") for more custom Glassware, first-person video bloggin', and more.
+Voice-Enabled Timer was modified from Google's platform sample by Zack Freedman of Voidstar Lab. Visit [his site](http://zackfreedman.com "the greatest site on the Web since Zombo.com") for more custom Glassware, first-person video blogging, and more.
 
 ## Changelog:
 12/11: 
