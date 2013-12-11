@@ -75,8 +75,8 @@ public class TimerService extends Service {
     	int initialHours = 0;
     	int initialMinutes = 0;
     	int initialSeconds = 0;
-    	boolean startsRunning = false;
-    	boolean startsSilently = true;
+    	boolean startsRunning = true;
+    	boolean startsLoudly = true;
 
     	String[] tokens = voiceResults.split("\\s+");
     	int pointer = 0;
@@ -85,49 +85,70 @@ public class TimerService extends Service {
 
     	while (pointer < tokens.length - 1) {
     		int candidate = -1;
+    		boolean andAHalf = false;
 
     		try { candidate = Integer.parseInt(tokens[pointer]); }
     		catch (NumberFormatException e) { // Special parsing
-    			if (tokens[pointer].equalsIgnoreCase("one") || // Hey Google voice parsing dudes: why does "one" parse as a word?
+    			if (tokens[pointer].equalsIgnoreCase("one") || // Hey Google speech-to-text dudes: why does "one" parse as a word?
     					tokens[pointer].equalsIgnoreCase("an") ||
     					tokens[pointer].equalsIgnoreCase("a")) {
     				candidate = 1;
+    				Log.d("Timer", "Parsed non-numeric variant of 'one'.");
     			}
-    			else if ((tokens[pointer].equalsIgnoreCase("start")  ||
-    					tokens[pointer].equalsIgnoreCase("starting")) &&
-    					tokens[pointer + 1].equalsIgnoreCase("now")) {
-    				pointer++;
-    				startsRunning = true;
+    			else if (tokens[pointer].equalsIgnoreCase("1&a")) {
+    				candidate = 1;
+    				andAHalf = true;
+    				Log.d("Timer", "Parsed bizarre '1&a' speech token. Please complain to Google.");
+    			}
+    			else if (tokens[pointer].equalsIgnoreCase("paused")) {
+    				startsRunning = false;
+    				Log.d("Timer", "Timer starts paused");
     			}
     			else if (tokens[pointer].equalsIgnoreCase("half") &&
     				tokens[pointer + 1].equalsIgnoreCase("an") &&
     				tokens[pointer + 2].equalsIgnoreCase("hour")) {
     				initialMinutes = 30;
     				pointer += 2;
+    				Log.d("Timer", "Special 'half an X' case handled");
+    			}
+    			else if (tokens[pointer].equalsIgnoreCase("quietly")) {
+    				startsLoudly = false;
+    				Log.d("Timer", "Starting timer in the background");
     			}
     			else {
-    				// parsing failed
+    				Log.w("Timer", "Token " + tokens[pointer] + " not parsed");
     			}
     		}
 
     		pointer++;
 
     		if (candidate > -1 && candidate <= 60) {
+    			if (tokens[pointer].equalsIgnoreCase("and") &&
+    					tokens[pointer + 1].equalsIgnoreCase("a") &&
+    					tokens[pointer + 2].equalsIgnoreCase("half")) {
+    				andAHalf = true;
+    				pointer += 3;
+    				Log.d("Timer", "Handled 'X and a half' units");
+    			}
+    			
     			if (tokens[pointer].equalsIgnoreCase("hour") ||
     					tokens[pointer].equalsIgnoreCase("hours")) {
     				initialHours = candidate;
+    				if (andAHalf) initialMinutes = 30;
     				pointer++;
     				Log.d("Timer", "Parsed out " + Integer.toString(candidate) + " hours");
     			}
     			else if (tokens[pointer].equalsIgnoreCase("minute") ||
     					tokens[pointer].equalsIgnoreCase("minutes")) {
     				initialMinutes = candidate;
+    				if (andAHalf) initialSeconds = 30;
     				pointer++;
     				Log.d("Timer", "Parsed out " + Integer.toString(candidate) + " minutes");
     			}
     			else if (tokens[pointer].equalsIgnoreCase("second") ||
     					tokens[pointer].equalsIgnoreCase("seconds")) {
     				initialSeconds = candidate;
+    				if (andAHalf) initialSeconds += 1; // Fakes rounding up for those smartasses who try and set a timer for one-and-a-half seconds
     				pointer++;
     				Log.d("Timer", "Parsed out " + Integer.toString(candidate) + " secs, lol");
     			}
@@ -148,7 +169,7 @@ public class TimerService extends Service {
             mLiveCard = mTimelineManager.getLiveCard(LIVE_CARD_ID);
 
             mLiveCard.enableDirectRendering(true).getSurfaceHolder().addCallback(mTimerDrawer);
-            mLiveCard.setNonSilent(startsSilently);
+            mLiveCard.setNonSilent(startsLoudly);
 
             Intent menuIntent = new Intent(this, MenuActivity.class);
             mLiveCard.setAction(PendingIntent.getActivity(this, 0, menuIntent, 0));
