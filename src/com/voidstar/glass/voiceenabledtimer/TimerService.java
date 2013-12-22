@@ -83,7 +83,7 @@ public class TimerService extends Service {
 
     	// TODO find and add additional special cases
 
-    	while (pointer < tokens.length - 1) {
+    	while (pointer < tokens.length) {
     		int candidate = -1;
     		boolean andAHalf = false;
 
@@ -100,7 +100,8 @@ public class TimerService extends Service {
     				andAHalf = true;
     				Log.d("Timer", "Parsed bizarre '1&a' speech token. Please complain to Google.");
     			}
-    			else if (tokens[pointer].equalsIgnoreCase("paused")) {
+    			else if (tokens[pointer].equalsIgnoreCase("paused") ||
+    					tokens[pointer].equalsIgnoreCase("pause")) {
     				startsRunning = false;
     				Log.d("Timer", "Timer starts paused");
     			}
@@ -166,15 +167,14 @@ public class TimerService extends Service {
     	}
     	
         if (mLiveCard == null) {
-            mLiveCard = mTimelineManager.getLiveCard(LIVE_CARD_ID);
+            mLiveCard = mTimelineManager.createLiveCard(LIVE_CARD_ID);
 
-            mLiveCard.enableDirectRendering(true).getSurfaceHolder().addCallback(mTimerDrawer);
-            mLiveCard.setNonSilent(startsLoudly);
+            mLiveCard.setDirectRenderingEnabled(true).getSurfaceHolder().addCallback(mTimerDrawer);
 
             Intent menuIntent = new Intent(this, MenuActivity.class);
             mLiveCard.setAction(PendingIntent.getActivity(this, 0, menuIntent, 0));
 
-            mLiveCard.publish();
+            mLiveCard.publish(startsLoudly ? LiveCard.PublishMode.REVEAL : LiveCard.PublishMode.SILENT);
         } else {
             // TODO(alainv): Jump to the LiveCard when API is available.
         }
