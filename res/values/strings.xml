@@ -17,7 +17,7 @@
 <resources>
     <string name="app_name">Timer</string>
     <string name="start_timer">set timer for</string>
-    <string name="timer_length">Hours, minutes, and/or seconds</string>
+    <string name="timer_length">hours, minutes, and/or seconds</string>
 
     <string name="timer_finished">Timer finished</string>
 
