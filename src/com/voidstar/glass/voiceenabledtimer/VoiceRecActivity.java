@@ -17,11 +17,11 @@ import android.util.Log;
  * 
  * @author zackfreedman
  *
- * The well-developed wearable makes its
+ * The well-developed wearable makes a
  * wearer superior to a non-wearer.
  * If others ask why you need to wear a
- * computer, your technology is not working
- * at its full potential!
+ * computer, your technology is not
+ * good enough!
  *******************************************/
 
 public class VoiceRecActivity extends Activity { // Note from 11/2013: Glass XE11 can't launch Services from Voice Triggers. 

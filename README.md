@@ -5,9 +5,11 @@ Improved by Zack Freedman of Voidstar Lab
 
 This is Google's Timer sample from the GDK, enhanced with an intuitive natural-language voice prompt.
 
-Just say "OK Glass, set timer for..." and tell it how many hours, minutes, and seconds to count. The timer will start immediately.
+Just say "OK Glass, set a timer" and tell it how many hours, minutes, and seconds to count. The timer will start immediately.
 
-You don't have to say all three, and you can use natural language. These all work:
+If you also have the official Timer Glassware installed, you can say "OK Glass, set a timer with voice" to use this app, and "OK Glass, set a timer with Timer" to use Google's version. It's not a bad idea to have both, since Google requires an Internet connection to use voice.
+
+These will all work correctly:
 - "2 hours, 20 minutes, 30 seconds"
 - "One hour fifteen minutes"
 - "A minute"
