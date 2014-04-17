@@ -57,11 +57,11 @@ public class SelectValueScrollAdapter extends CardScrollAdapter {
         final TextView view = (TextView) convertView.findViewById(R.id.value);
         view.setText(String.format("%02d", position));
 
-        return setItemOnCard(this, convertView);
+        return convertView;
     }
 
     @Override
-    public int findIdPosition(Object id) {
+    public int getPosition(Object id) {
         if (id instanceof Integer) {
             int idInt = (Integer) id;
             if (idInt >= 0 && idInt < mCount) {
@@ -69,10 +69,5 @@ public class SelectValueScrollAdapter extends CardScrollAdapter {
             }
         }
         return AdapterView.INVALID_POSITION;
-    }
-
-    @Override
-    public int findItemPosition(Object item) {
-        return findIdPosition(item);
     }
 }

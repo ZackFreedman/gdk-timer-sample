@@ -16,19 +16,13 @@
 
 package com.voidstar.glass.voiceenabledtimer;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.android.glass.timeline.LiveCard;
-import com.google.android.glass.timeline.TimelineManager;
 
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.SystemClock;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 
 /**
@@ -51,13 +45,11 @@ public class TimerService extends Service {
 
     private TimerDrawer mTimerDrawer;
 
-    private TimelineManager mTimelineManager;
     private LiveCard mLiveCard;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        mTimelineManager = TimelineManager.from(this);
         mTimerDrawer = new TimerDrawer(this);
     }
 
@@ -89,7 +81,10 @@ public class TimerService extends Service {
 
     		try { candidate = Integer.parseInt(tokens[pointer]); }
     		catch (NumberFormatException e) { // Special parsing
-    			if (tokens[pointer].equalsIgnoreCase("one") || // Hey Google speech-to-text dudes: why does "one" parse as a word?
+    			if (pointer == 0 && tokens[pointer].equals("for")) {
+    				Log.d("Timer", "Ignoring a leading 'for' that made it into the voice payload");
+    			}
+    			else if (tokens[pointer].equalsIgnoreCase("one") || // Hey Google speech-to-text dudes: why does "one" parse as a word?
     					tokens[pointer].equalsIgnoreCase("an") ||
     					tokens[pointer].equalsIgnoreCase("a")) {
     				candidate = 1;
@@ -167,16 +162,17 @@ public class TimerService extends Service {
     	}
     	
         if (mLiveCard == null) {
-            mLiveCard = mTimelineManager.createLiveCard(LIVE_CARD_ID);
+        	mLiveCard = new LiveCard(getBaseContext(), LIVE_CARD_ID);
 
             mLiveCard.setDirectRenderingEnabled(true).getSurfaceHolder().addCallback(mTimerDrawer);
 
             Intent menuIntent = new Intent(this, MenuActivity.class);
             mLiveCard.setAction(PendingIntent.getActivity(this, 0, menuIntent, 0));
 
+            mLiveCard.attach(this);
             mLiveCard.publish(startsLoudly ? LiveCard.PublishMode.REVEAL : LiveCard.PublishMode.SILENT);
         } else {
-            // TODO(alainv): Jump to the LiveCard when API is available.
+            mLiveCard.navigate();
         }
 
         return START_STICKY;

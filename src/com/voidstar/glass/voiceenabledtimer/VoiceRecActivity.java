@@ -25,10 +25,10 @@ import android.util.Log;
  *******************************************/
 
 public class VoiceRecActivity extends Activity { // Note from 11/2013: Glass XE11 can't launch Services from Voice Triggers. 
-	@Override									 // This Activity is a workaround.
+	@Override									 // Note from 4/2013: I should really pull my head out of my ass and get rid of this Activity 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(new Card(getBaseContext()).toView());
+		setContentView(new Card(getBaseContext()).getView());
 	}
 	
 	@Override
@@ -45,7 +45,9 @@ public class VoiceRecActivity extends Activity { // Note from 11/2013: Glass XE1
 		ArrayList<String> voiceResults = getIntent().getExtras()
 		.getStringArrayList(RecognizerIntent.EXTRA_RESULTS);
 
-		Log.d("Timer", voiceResults.get(0));
+		for (String result : voiceResults) {
+			Log.d("Voice-Enabled Timer", result);
+		}
 		
 		Intent timerServiceIntent = new Intent(this, TimerService.class);
 		timerServiceIntent.putExtra("VoiceResults", voiceResults.get(0));

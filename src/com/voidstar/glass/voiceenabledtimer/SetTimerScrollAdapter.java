@@ -148,20 +148,15 @@ public class SetTimerScrollAdapter extends CardScrollAdapter {
         }
         views[position].setTextColor(mContext.getResources().getColor(R.color.white));
 
-        return setItemOnCard(this, convertView);
+        return convertView;
     }
 
     @Override
-    public int findIdPosition(Object id) {
+    public int getPosition(Object id) {
         if (id instanceof TimeComponents) {
             TimeComponents component = (TimeComponents) id;
             return component.getPosition();
         }
         return AdapterView.INVALID_POSITION;
-    }
-
-    @Override
-    public int findItemPosition(Object item) {
-        return findIdPosition(item);
     }
 }

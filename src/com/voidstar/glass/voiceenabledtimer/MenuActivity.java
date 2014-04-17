@@ -21,6 +21,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +35,10 @@ public class MenuActivity extends Activity {
     /** Request code for setting the timer. */
     private static final int SET_TIMER = 100;
 
+    private final Handler mVamanosMuchachoHandler = new Handler();
+    private boolean mAttachedToWindow;
+    private boolean mOptionsMenuOpen;
+    
     private Timer mTimer;
     private boolean mResumed;
     private boolean mSettingTimer;
@@ -62,21 +67,22 @@ public class MenuActivity extends Activity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mResumed = true;
+    public void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mAttachedToWindow = true;
         openOptionsMenu();
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-        mResumed = false;
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        mAttachedToWindow = false;
     }
 
     @Override
     public void openOptionsMenu() {
-        if (mResumed && mTimer != null) {
+        if (!mOptionsMenuOpen && mAttachedToWindow && mTimer != null) {
+        	mOptionsMenuOpen = true;
             super.openOptionsMenu();
         }
     }
@@ -124,7 +130,12 @@ public class MenuActivity extends Activity {
                 mTimer.reset();
                 return true;
             case R.id.stop:
-                stopService(new Intent(this, TimerService.class));
+            	mVamanosMuchachoHandler.post(new Runnable() {
+            		@Override
+            		public void run() {
+                        stopService(new Intent(MenuActivity.this, TimerService.class));
+            		}
+            	});
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -133,6 +144,8 @@ public class MenuActivity extends Activity {
 
     @Override
     public void onOptionsMenuClosed(Menu menu) {
+    	super.onOptionsMenuClosed(menu);
+    	mOptionsMenuOpen = false;
         if (!mSettingTimer) {
             // Nothing else to do, closing the Activity.
             finish();

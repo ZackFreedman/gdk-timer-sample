@@ -119,7 +119,7 @@ public class SetTimerActivity extends Activity implements GestureDetector.BaseLi
 
             mAdapter.setTimeComponent(
                     component, data.getIntExtra(SelectValueActivity.EXTRA_SELECTED_VALUE, 0));
-            mView.updateViews(true);
+            mAdapter.notifyDataSetChanged();
         }
     }
 }

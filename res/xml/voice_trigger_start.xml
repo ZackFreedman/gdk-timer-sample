@@ -14,6 +14,10 @@
      limitations under the License.
 -->
 
-<trigger keyword="@string/start_timer">
-   <input prompt="@string/timer_length" />
+<trigger command="START_A_TIMER">
+    <constraints
+        network="true"
+        microphone="true" />
+    <input
+        prompt="@string/timer_length_prompt" />
 </trigger>

@@ -47,12 +47,18 @@ To start the sample, say "OK Glass, set a timer for..." from the Glass clock scr
 Voice-Enabled Timer was modified from Google's platform sample by Zack Freedman of Voidstar Lab. Visit [his site](http://zackfreedman.com "the greatest site on the Web since Zombo.com") for more custom Glassware, first-person video blogging, and more.
 
 ## Changelog:
-12/11: 
+12/11/13: 
 	- Now parses "X and a half Y" phrases
 	- Timer now starts running automatically:
-		- Removed parsing "starting now"
-		- Added parsing "paused"
-	- Implemented "quietly" to run in background
+		- Removed power word 'starting now'
+		- Added power word 'paused'
+	- Implemented power word 'quietly' to run in background
 	- Properly parses a couple of corner cases like "1&a"
 	- Removed parsing for unnecessary words like "starting"
 	- Added more Logcat debug strings for parsing
+
+4/16/14:
+- Updated for XE16, which actually exists, much to my surprise
+- Now ignores leading 'for'
+- Uses listed "Start a Timer" voice command
+- Uses Glass' requirements to prevent from launching without Internet or mic available
