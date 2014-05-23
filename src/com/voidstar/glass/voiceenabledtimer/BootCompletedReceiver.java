@@ -79,7 +79,7 @@ public class BootCompletedReceiver extends BroadcastReceiver {
             Intent serviceIntent = new Intent(context, TimerService.class);
             serviceIntent.putExtra("regenerate", true);
             serviceIntent.putExtra("endmillis", tombstone.lastTimerEndMillis());
-            serviceIntent.putExtra("loudly", tombstone.lastTimerFlags() & FLAG_LOUDLY);
+            serviceIntent.putExtra("loudly", (tombstone.lastTimerFlags() & FLAG_LOUDLY) > 0);
             context.startService(serviceIntent);    
 		}
 	}
