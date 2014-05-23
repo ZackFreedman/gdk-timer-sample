@@ -16,13 +16,20 @@
 
 package com.voidstar.glass.voiceenabledtimer;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
+
 import android.app.Activity;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -122,14 +129,30 @@ public class MenuActivity extends Activity {
             case R.id.start:
             case R.id.resume:
                 mTimer.start();
+                try {
+    				FileOutputStream fos = openFileOutput("timertombstone", Context.MODE_PRIVATE);
+    				ObjectOutputStream oos = new ObjectOutputStream(fos);
+    				TimerTombstone tombstone = new TimerTombstone(mTimer.getRemainingTimeMillis(), 2);
+    				oos.writeObject(tombstone);
+    				oos.close();
+    				fos.close();
+    			} catch (FileNotFoundException e) {
+    				Log.d("Timer", "This error should never occur.");
+    			} catch (IOException e) {
+    				e.printStackTrace();
+    			}
                 return true;
             case R.id.pause:
                 mTimer.pause();
+                deleteFile("timertombstone");
                 return true;
             case R.id.reset:
                 mTimer.reset();
+                deleteFile("timertombstone");
                 return true;
             case R.id.stop:
+                deleteFile("timertombstone");
+
             	mVamanosMuchachoHandler.post(new Runnable() {
             		@Override
             		public void run() {
